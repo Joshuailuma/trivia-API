@@ -24,7 +24,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
     # CORS(app)
 
 
@@ -298,24 +298,24 @@ def create_app(test_config=None):
             abort(400)
         
         # Get paramters from JSON Body.
-        previous_question = body.get('previous_question', None)
+        previous_questions = body.get('previous_question', None)
         quiz_category = body.get('quiz_category', None)
 
-        # If previous_question is specified
-        if previous_question:
+        # If previous_questions is specified
+        if previous_questions:
             # If current category has a value/is specified and its value is not 0
             if quiz_category and quiz_category['id']!=0:
 
                 # Query for questions in that category except the previous question
                 question_list = (Question.query
                 .filter(Question.category == str(quiz_category['id']))
-                .filter(Question.id.notin_(previous_question))
+                .filter(Question.id.notin_(previous_questions))
                 .all())
             else:
                 # if the current category is not specified, 
                 # Query for all the questions in database except the previous question
                 question_list = (Question.query
-                .filter(Question.id.notin_(previous_question))
+                .filter(Question.id.notin_(previous_questions))
                 .all())
                 
         else:
